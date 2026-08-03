@@ -70,13 +70,10 @@
   <body>
     <main>
       <h1>Abby's best times vs YMCA state cuts</h1>
-      <p id="summary">Loading comparisons…</p>
       <table>
         <thead>
           <tr>
             <th>Event</th>
-            <th>Age Group</th>
-            <th>Gender</th>
             <th>Abby Best</th>
             <th>YMCA Cut</th>
             <th>Difference</th>
@@ -293,8 +290,6 @@
           return `
             <tr class="${rowClass}">
               <td>${row.event}</td>
-              <td>${row.ageGroup}</td>
-              <td>${row.gender}</td>
               <td>${formatDisplayTime(row.swimmerTime)}</td>
               <td>${formatDisplayTime(row.cutTime)}</td>
               <td><span class="pill">${formatDifference(row.differenceSeconds)}</span></td>
@@ -303,8 +298,6 @@
         })
         .join("");
 
-      const ageGroupLabel = ageGroupLabels[currentAgeGroup] || currentAgeGroup;
-      document.getElementById("summary").textContent = `${rows.length} ${ageGroupLabel} events compared for Abby.`;
     </script>
   </body>
 </html>
