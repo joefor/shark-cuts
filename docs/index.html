@@ -1,5 +1,310 @@
-<html>
-<body>
-	Hello, world! Welcome to Shark Cuts!
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shark Cuts - Abby vs YMCA Cuts</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      body {
+        margin: 0;
+        background: #07111f;
+        color: #f3f4f6;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1 {
+        margin-bottom: 0.5rem;
+      }
+      p {
+        margin-top: 0;
+        color: #9ca3af;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #111827;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        padding: 0.8rem 0.9rem;
+        text-align: left;
+        border-bottom: 1px solid #374151;
+      }
+      th {
+        background: #0f766e;
+        color: white;
+      }
+      tr.ahead {
+        background: #052e2b;
+      }
+      tr.behind {
+        background: #3f1720;
+      }
+      .pill {
+        display: inline-block;
+        padding: 0.25rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .ahead .pill {
+        background: #34d399;
+        color: #052e16;
+      }
+      .behind .pill {
+        background: #f87171;
+        color: #450a0a;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Abby's best times vs YMCA state cuts</h1>
+      <p id="summary">Loading comparisons…</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Age Group</th>
+            <th>Gender</th>
+            <th>Abby Best</th>
+            <th>YMCA Cut</th>
+            <th>Difference</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </main>
+
+    <script src="fastest_times.js"></script>
+    <script src="ymca_state_times.js"></script>
+    <script>
+      const strokeNames = { 1: "Free", 2: "Back", 3: "Breast", 4: "Fly", 5: "IM" };
+      const ageGroupLabels = {
+        "08U": "8 & Under",
+        "0910": "9 & 10",
+        "1112": "11 & 12",
+        "1314": "13 & 14",
+        "1519": "15-19",
+      };
+      const ageGroupRank = {
+        "08U": 0,
+        "0910": 1,
+        "1112": 2,
+        "1314": 3,
+        "1519": 4,
+      };
+
+      function normalizeAgeGroup(value) {
+        if (value === null || value === undefined || value === "") {
+          return null;
+        }
+
+        const raw = String(value).trim().toUpperCase();
+        if (raw === "08U" || raw.startsWith("08")) {
+          return "08U";
+        }
+        if (raw === "0910" || raw === "0912" || raw.startsWith("09")) {
+          return "0910";
+        }
+        if (raw === "1112" || raw.startsWith("11")) {
+          return "1112";
+        }
+        if (raw === "1314" || raw.startsWith("13")) {
+          return "1314";
+        }
+        if (raw === "1519" || raw.startsWith("15")) {
+          return "1519";
+        }
+        return null;
+      }
+
+      function parseTimeToSeconds(value) {
+        if (value === null || value === undefined || value === "") {
+          return null;
+        }
+
+        const raw = String(value).trim();
+        const parts = raw.split(":").map((part) => parseFloat(part));
+        if (parts.some((part) => Number.isNaN(part))) {
+          return null;
+        }
+
+        if (parts.length === 1) {
+          return parts[0];
+        }
+        if (parts.length === 2) {
+          return parts[0] * 60 + parts[1];
+        }
+        return parts[0] * 3600 + parts[1] * 60 + parts[2];
+      }
+
+      function formatTime(value) {
+        if (value === null || value === undefined) {
+          return "—";
+        }
+
+        const totalSeconds = Math.round(value * 100) / 100;
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        const hours = Math.floor(minutes / 60);
+        const displayMinutes = minutes % 60;
+
+        if (hours > 0) {
+          return `${hours}:${String(displayMinutes).padStart(2, "0")}:${String(seconds.toFixed(2)).padStart(5, "0")}`;
+        }
+        if (displayMinutes > 0) {
+          return `${displayMinutes}:${String(seconds.toFixed(2)).padStart(5, "0")}`;
+        }
+        return `${seconds.toFixed(2)}`;
+      }
+
+      function formatDisplayTime(value) {
+        if (value === null || value === undefined || value === "") {
+          return "—";
+        }
+
+        const raw = String(value).trim();
+        if (/^\d+:\d{2}\.\d{2}$/.test(raw)) {
+          return raw;
+        }
+
+        const parsed = parseTimeToSeconds(value);
+        if (parsed === null) {
+          return raw;
+        }
+
+        const totalSeconds = Math.round(parsed * 100) / 100;
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        return `${minutes}:${String(seconds.toFixed(2)).padStart(5, "0")}`;
+      }
+
+      function formatDifference(seconds) {
+        if (seconds === null) {
+          return "—";
+        }
+
+        const rounded = seconds.toFixed(2);
+        if (seconds < 0) {
+          return `Ahead by ${Math.abs(seconds).toFixed(2)}s`;
+        }
+        if (seconds > 0) {
+          return `Needs ${rounded}s faster`;
+        }
+        return "Right on the cut";
+      }
+
+      function getEventLabel(distance, stroke) {
+        if (stroke === "5") {
+          return `${distance} IM`;
+        }
+        return `${distance} ${strokeNames[stroke] || stroke}`;
+      }
+
+      function buildBestTimesMap(items) {
+        const bestByKey = new Map();
+
+        items.forEach((item) => {
+          if (!item || item.eventcourse === "L") {
+            return;
+          }
+
+          const key = `${item.eventgender}|${item.eventdistance}|${item.eventstroke}`;
+          const currentTime = parseTimeToSeconds(item.eventtime);
+          if (currentTime === null) {
+            return;
+          }
+
+          const existing = bestByKey.get(key);
+          if (!existing) {
+            bestByKey.set(key, item);
+            return;
+          }
+
+          const existingTime = parseTimeToSeconds(existing.eventtime);
+          if (currentTime < existingTime) {
+            bestByKey.set(key, item);
+          }
+        });
+
+        return bestByKey;
+      }
+
+      const currentAgeGroup = "1314";
+      const bestTimes = buildBestTimesMap(fastestTimes);
+      const rows = [];
+
+      ymcaStateTimes.forEach((cut) => {
+        if (normalizeAgeGroup(cut.eventage) !== currentAgeGroup) {
+          return;
+        }
+
+        const swimmer = bestTimes.get(`${cut.eventgender}|${cut.eventdistance}|${cut.eventstroke}`);
+
+        if (!swimmer) {
+          return;
+        }
+
+        const cutSeconds = parseTimeToSeconds(cut.eventtime);
+        const swimmerSeconds = parseTimeToSeconds(swimmer.eventtime);
+
+        if (cutSeconds === null || swimmerSeconds === null) {
+          return;
+        }
+
+        rows.push({
+          event: getEventLabel(cut.eventdistance, cut.eventstroke),
+          ageGroup: ageGroupLabels[cut.eventage] || cut.eventage,
+          gender: cut.eventgender === "F" ? "Girls" : "Boys",
+          swimmerTime: swimmer.eventtime,
+          cutTime: cut.eventtime,
+          differenceSeconds: swimmerSeconds - cutSeconds,
+          strokeCode: Number(cut.eventstroke),
+          distance: Number(cut.eventdistance),
+        });
+      });
+
+      rows.sort((a, b) => {
+        if (a.strokeCode !== b.strokeCode) {
+          return a.strokeCode - b.strokeCode;
+        }
+        if (a.distance !== b.distance) {
+          return a.distance - b.distance;
+        }
+        return a.event.localeCompare(b.event);
+      });
+
+      const body = document.getElementById("results-body");
+      body.innerHTML = rows
+        .map((row) => {
+          const rowClass = row.differenceSeconds <= 0 ? "behind" : "ahead";
+          return `
+            <tr class="${rowClass}">
+              <td>${row.event}</td>
+              <td>${row.ageGroup}</td>
+              <td>${row.gender}</td>
+              <td>${formatDisplayTime(row.swimmerTime)}</td>
+              <td>${formatDisplayTime(row.cutTime)}</td>
+              <td><span class="pill">${formatDifference(row.differenceSeconds)}</span></td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      const ageGroupLabel = ageGroupLabels[currentAgeGroup] || currentAgeGroup;
+      document.getElementById("summary").textContent = `${rows.length} ${ageGroupLabel} events compared for Abby.`;
+    </script>
+  </body>
 </html>
