@@ -65,6 +65,52 @@
         background: #f87171;
         color: #450a0a;
       }
+      .progress-cell {
+        width: 24rem;
+      }
+      .progress {
+        position: relative;
+        height: 1.75rem;
+        border-radius: 999px;
+        background: #1f2937;
+        overflow: hidden;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        font-size: 0.82rem;
+        color: #e5e7eb;
+      }
+      .progress-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #34d399, #0f766e);
+        transition: width 0.3s ease;
+        z-index: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .progress .progress-text {
+        position: relative;
+        z-index: 1;
+        white-space: nowrap;
+        padding: 0 0.35rem;
+      }
+      .progress-label {
+        display: none;
+      }
+      .progress-detail {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.35rem;
+      }
+      .progress-detail .pill {
+        margin-left: auto;
+      }
     </style>
   </head>
   <body>
@@ -77,6 +123,7 @@
             <th>Abby Best</th>
             <th>YMCA Cut</th>
             <th>Difference</th>
+            <th>Progress</th>
           </tr>
         </thead>
         <tbody id="results-body"></tbody>
@@ -194,13 +241,11 @@
         }
 
         const rounded = seconds.toFixed(2);
-        if (seconds < 0) {
-          return `Ahead by ${Math.abs(seconds).toFixed(2)}s`;
+        if (seconds <= 0) {
+          return `Qualified!`;
+        } else {
+          return `${rounded}s`;
         }
-        if (seconds > 0) {
-          return `Needs ${rounded}s faster`;
-        }
-        return "Right on the cut";
       }
 
       function getEventLabel(distance, stroke) {
@@ -283,16 +328,30 @@
         return a.event.localeCompare(b.event);
       });
 
+      function cubicProgress(cutSeconds, swimmerSeconds) {
+        const ratio = cutSeconds / swimmerSeconds;
+        const progress = 100 * Math.pow(ratio, 3);
+        return Math.min(100, Math.max(0, progress));
+      }
+
       const body = document.getElementById("results-body");
       body.innerHTML = rows
         .map((row) => {
           const rowClass = row.differenceSeconds <= 0 ? "behind" : "ahead";
+          const progress = cubicProgress(parseTimeToSeconds(row.cutTime), parseTimeToSeconds(row.swimmerTime));
           return `
             <tr class="${rowClass}">
               <td>${row.event}</td>
               <td>${formatDisplayTime(row.swimmerTime)}</td>
               <td>${formatDisplayTime(row.cutTime)}</td>
-              <td><span class="pill">${formatDifference(row.differenceSeconds)}</span></td>
+              <td>${formatDifference(row.differenceSeconds)}</td>
+              <td class="progress-cell">
+                <div class="progress" aria-label="Progress to cut: ${progress.toFixed(1)}%">
+                  <div class="progress-fill" style="width: ${progress.toFixed(1)}%;">
+                    <span class="progress-text">${progress.toFixed(1)}%</span>
+                  </div>
+                </div>
+              </td>
             </tr>
           `;
         })
