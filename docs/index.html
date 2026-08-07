@@ -175,9 +175,8 @@
           <thead>
             <tr>
               <th>Event</th>
-              <th>Abby's Best</th>
               <th>YMCA Cut</th>
-              <th>Difference</th>
+              <th>Abby's Best</th>
               <th>Progress</th>
             </tr>
           </thead>
@@ -191,9 +190,8 @@
           <thead>
             <tr>
               <th>Event</th>
-              <th>Abby's Best</th>
               <th>Silver Cut</th>
-              <th>Difference</th>
+              <th>Abby's Best</th>
               <th>Progress</th>
             </tr>
           </thead>
@@ -207,9 +205,8 @@
           <thead>
             <tr>
               <th>Event</th>
-              <th>Abby's Best</th>
               <th>Gold Cut</th>
-              <th>Difference</th>
+              <th>Abby's Best</th>
               <th>Progress</th>
             </tr>
           </thead>
@@ -342,9 +339,9 @@
 
         const rounded = seconds.toFixed(2);
         if (seconds <= 0) {
-          return `Qualified!`;
-        } else {
           return `${rounded}s`;
+        } else {
+          return `+${rounded}s`;
         }
       }
 
@@ -449,9 +446,8 @@
             return `
             <tr class="${rowClass}">
               <td>${row.event}</td>
-              <td>${formatDisplayTime(row.swimmerTime)}</td>
               <td>${formatDisplayTime(row.cutTime)}</td>
-              <td>${formatDifference(row.differenceSeconds)}</td>
+              <td>${formatDisplayTime(row.swimmerTime)}<br/>(${formatDifference(row.differenceSeconds)})</td>
               <td class="progress-cell">
                 <div class="progress" aria-label="Progress to cut: ${progress.toFixed(1)}%">
                   <div class="progress-fill" style="width: ${progress.toFixed(1)}%;">
