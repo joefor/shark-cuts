@@ -131,7 +131,7 @@
         display: flex;
         align-items: center;
         gap: 0.4rem;
-        font-size: 0.95rem;
+        font-size: 0.75rem;
         color: #d1d5db;
       }
       .table-controls select {
@@ -140,6 +140,7 @@
         border: 1px solid #374151;
         background: #111827;
         color: #f3f4f6;
+        font-size: 0.75rem;
       }
       .title-bar {
         background-color: #000000;  /* Makes the bar black */
@@ -173,11 +174,11 @@
           <label>
             Age
             <select id="global-age-select">
-              <option value="08U">8 & Under</option>
+              <option value="08U">8 & U</option>
               <option value="0910">9 & 10</option>
               <option value="1112">11 & 12</option>
               <option value="1314" selected>13 & 14</option>
-              <option value="1519">15-19</option>
+              <option value="1519">15 & O</option>
             </select>
           </label>
           <label>
@@ -192,7 +193,6 @@
         <table>
           <thead>
             <tr>
-              <th>Event</th>
               <th>YMCA Cut</th>
               <th>Abby's Best</th>
               <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
@@ -207,7 +207,6 @@
         <table>
           <thead>
             <tr>
-              <th>Event</th>
               <th>Silver Cut</th>
               <th>Abby's Best</th>
               <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
@@ -222,7 +221,6 @@
         <table>
           <thead>
             <tr>
-              <th>Event</th>
               <th>Gold Cut</th>
               <th>Abby's Best</th>
               <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
@@ -462,17 +460,11 @@
             const rowClass = row.differenceSeconds > 0 ? "behind" : "ahead";
             const progress = cubicProgress(parseTimeToSeconds(row.cutTime), parseTimeToSeconds(row.swimmerTime));
             const awardIcon = rowClass === "ahead" ? '<img src="images/icons/award.svg" alt="Qualified" title="Qualified"/>&nbsp;' : "";
-            const courseLabel = course === "Y" ? "SCY" : "LCM";
-            const courseTitle = course === "Y" ? "Short Course Yards" : "Long Course Meters";
             return `
             <tr class="${rowClass}">
               <td>
-                ${row.event}<br/>
-                <span class="small-text" title="${courseTitle}">${courseLabel}</span>
-              </td>
-              <td>
                 <img src="images/icons/timer.svg" alt="Qualifying (Cut) Time" title="Qualifying (Cut) Time"/>&nbsp;${formatDisplayTime(row.cutTime)}<br/>
-                <span class="small-text">(${row.ageGroup} ${row.gender})</span>
+                <span class="small-text">${row.event}</span>
               </td>
               <td>
                 ${awardIcon}${formatDisplayTime(row.swimmerTime)}<br/>
