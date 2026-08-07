@@ -22,7 +22,7 @@
       h1 {
         margin-bottom: 0.5rem;
       }
-      h2 img {
+      h2 img, th img {
         vertical-align: text-bottom;
       }
       p {
@@ -183,8 +183,8 @@
           <label>
             Course
             <select id="global-course-select">
-              <option value="Y" selected>SCY</option>
-              <option value="L">LCM</option>
+              <option title="Short Course Yards" value="Y" selected>SCY</option>
+              <option title="Long Course Meters" value="L">LCM</option>
             </select>
           </label>
         </div>
@@ -195,7 +195,7 @@
               <th>Event</th>
               <th>YMCA Cut</th>
               <th>Abby's Best</th>
-              <th>Progress</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
             </tr>
           </thead>
           <tbody id="results-body"></tbody>
@@ -210,7 +210,7 @@
               <th>Event</th>
               <th>Silver Cut</th>
               <th>Abby's Best</th>
-              <th>Progress</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
             </tr>
           </thead>
           <tbody id="silver-results-body"></tbody>
@@ -225,7 +225,7 @@
               <th>Event</th>
               <th>Gold Cut</th>
               <th>Abby's Best</th>
-              <th>Progress</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
             </tr>
           </thead>
           <tbody id="gold-results-body"></tbody>
@@ -462,11 +462,16 @@
             const rowClass = row.differenceSeconds > 0 ? "behind" : "ahead";
             const progress = cubicProgress(parseTimeToSeconds(row.cutTime), parseTimeToSeconds(row.swimmerTime));
             const awardIcon = rowClass === "ahead" ? '<img src="images/icons/award.svg" alt="Qualified" title="Qualified"/>&nbsp;' : "";
+            const courseLabel = course === "Y" ? "SCY" : "LCM";
+            const courseTitle = course === "Y" ? "Short Course Yards" : "Long Course Meters";
             return `
             <tr class="${rowClass}">
-              <td>${row.event}</td>
               <td>
-                <img src="images/icons/timer.svg" alt="Qualifying Time" title="Qualifying Time"/>&nbsp;${formatDisplayTime(row.cutTime)}<br/>
+                ${row.event}<br/>
+                <span class="small-text" title="${courseTitle}">${courseLabel}</span>
+              </td>
+              <td>
+                <img src="images/icons/timer.svg" alt="Qualifying (Cut) Time" title="Qualifying (Cut) Time"/>&nbsp;${formatDisplayTime(row.cutTime)}<br/>
                 <span class="small-text">(${row.ageGroup} ${row.gender})</span>
               </td>
               <td>
