@@ -306,26 +306,6 @@
         return parts[0] * 3600 + parts[1] * 60 + parts[2];
       }
 
-      function formatTime(value) {
-        if (value === null || value === undefined) {
-          return "—";
-        }
-
-        const totalSeconds = Math.round(value * 100) / 100;
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        const hours = Math.floor(minutes / 60);
-        const displayMinutes = minutes % 60;
-
-        if (hours > 0) {
-          return `${hours}:${String(displayMinutes).padStart(2, "0")}:${String(seconds.toFixed(2)).padStart(5, "0")}`;
-        }
-        if (displayMinutes > 0) {
-          return `${displayMinutes}:${String(seconds.toFixed(2)).padStart(5, "0")}`;
-        }
-        return `${seconds.toFixed(2)}`;
-      }
-
       function formatDisplayTime(value) {
         if (value === null || value === undefined || value === "") {
           return "—";
@@ -333,6 +313,9 @@
 
         const raw = String(value).trim();
         if (/^\d+:\d{2}\.\d{2}$/.test(raw)) {
+          if (raw.startsWith("0:")) {
+            return raw.substring(2);
+          }
           return raw;
         }
 
@@ -345,7 +328,11 @@
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
 
-        return `${minutes}:${String(seconds.toFixed(2)).padStart(5, "0")}`;
+        if (minutes > 0) {
+          return `${minutes}:${String(seconds.toFixed(2)).padStart(5, "0")}`;
+        } else {
+          return `${seconds.toFixed(2)}`;
+        }
       }
 
       function formatDifference(seconds) {
