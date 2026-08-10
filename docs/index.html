@@ -11,8 +11,8 @@
       }
       body {
         margin: 0;
-        background: #07111f;
-        color: #f3f4f6;
+        background: #080E17;
+        color: white;
       }
       main {
         max-width: 1100px;
@@ -41,18 +41,21 @@
       td {
         padding: 0.8rem 0.9rem;
         text-align: left;
-        border-bottom: 1px solid #374151;
+        border-bottom: 1px solid #080E17;
         vertical-align: text-top;
       }
       th {
-        background: #0f766e;
+        background: #136C62;
         color: white;
       }
       tr.ahead {
-        background: #052e2b;
+        background: #0A5F5A;
       }
       tr.behind {
-        background: #3f1720;
+        background: #36454E;
+      }
+      .besttime-ahead {
+        color: #30D878;
       }
       .progress-cell {
         width: auto;
@@ -62,7 +65,7 @@
         position: relative;
         height: 2rem;
         border-radius: 999px;
-        background: #1f2937;
+        background: #27323A;
         overflow: hidden;
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
         font-size: 0.82rem;
@@ -75,19 +78,22 @@
         height: 100%;
         width: 0;
         border-radius: 999px;
-        background: linear-gradient(90deg, #34d399, #0f766e);
+        background: #50AF65;
         transition: width 0.3s ease;
         z-index: 0;
         display: flex;
         align-items: center;
         justify-content: center;
       }
+      tr.ahead .progress-fill {
+        background: #30D878;
+      }
       .progress .progress-text {
         position: relative;
         z-index: 1;
         white-space: nowrap;
         padding: 0 0.35rem;
-        color: #1f2937;
+        color: #27323A;
         font-size: 0.75rem;
       }
       .table-controls {
@@ -124,7 +130,7 @@
       }
       .small-text {
         font-size: 0.85rem;
-        color: #9ca3af;
+        color: #A0ACB4;
       }
     </style>
   </head>
@@ -413,7 +419,7 @@
           .map((row) => {
             const rowClass = row.differenceSeconds === null ? "behind" : (row.differenceSeconds > 0 ? "behind" : "ahead");
             const progress = cubicProgress(parseTimeToSeconds(row.cutTime), row.swimmerTime ? parseTimeToSeconds(row.swimmerTime) : null);
-            const awardIcon = (rowClass === "ahead" && row.swimmerTime) ? '<img src="images/icons/award.svg" alt="Qualified" title="Qualified"/>&nbsp;' : "";
+            const awardIcon = (rowClass === "ahead" && row.swimmerTime) ? '<img src="images/icons/trophy.svg" alt="Qualified" title="Qualified"/>&nbsp;' : "";
             const bestTimeDisplay = row.swimmerTime ? formatDisplayTime(row.swimmerTime) : "";
             const bestTimeDifference = row.swimmerTime ? "(" + formatDifference(row.differenceSeconds) + ")" : "";
             return `
@@ -422,7 +428,7 @@
                 <img src="images/icons/timer.svg" alt="Qualifying (Cut) Time" title="Qualifying (Cut) Time"/>&nbsp;${formatDisplayTime(row.cutTime)}<br/>
                 <span class="small-text">${row.event}</span>
               </td>
-              <td>
+              <td class="besttime-${rowClass}">
                 ${awardIcon}${bestTimeDisplay}<br/>
                 <span class="small-text">${bestTimeDifference}</span>
               </td>
