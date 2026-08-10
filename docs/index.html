@@ -392,24 +392,23 @@
             return;
           }
 
-          const swimmer = bestTimesMap.get(`${cut.eventdistance}|${cut.eventstroke}`);
-          if (!swimmer) {
+          const key = `${cut.eventdistance}|${cut.eventstroke}`;
+          const swimmer = bestTimesMap.get(key);
+
+          const cutSeconds = parseTimeToSeconds(cut.eventtime);
+          if (cutSeconds === null) {
             return;
           }
 
-          const cutSeconds = parseTimeToSeconds(cut.eventtime);
-          const swimmerSeconds = parseTimeToSeconds(swimmer.eventtime);
-          if (cutSeconds === null || swimmerSeconds === null) {
-            return;
-          }
+          const swimmerSeconds = swimmer ? parseTimeToSeconds(swimmer.eventtime) : null;
 
           rows.push({
             event: getEventLabel(cut.eventdistance, cut.eventstroke),
             ageGroup: ageGroupLabels[cut.eventage] || cut.eventage,
             gender: cut.eventgender === "F" ? "Girls" : "Boys",
-            swimmerTime: swimmer.eventtime,
+            swimmerTime: swimmer ? swimmer.eventtime : null,
             cutTime: cut.eventtime,
-            differenceSeconds: swimmerSeconds - cutSeconds,
+            differenceSeconds: swimmerSeconds === null ? null : swimmerSeconds - cutSeconds,
             strokeCode: Number(cut.eventstroke),
             distance: Number(cut.eventdistance),
           });
@@ -429,6 +428,10 @@
       }
 
       function cubicProgress(cutSeconds, swimmerSeconds) {
+        if (cutSeconds === null || swimmerSeconds === null || swimmerSeconds === 0) {
+          return 0;
+        }
+
         const ratio = cutSeconds / swimmerSeconds;
         const progress = 100 * Math.pow(ratio, 3);
         return Math.min(100, Math.max(0, progress));
@@ -444,9 +447,11 @@
         const rows = buildComparisonRows(cutTimes, bestTimesForCourse, gender, ageGroup, course);
         body.innerHTML = rows
           .map((row) => {
-            const rowClass = row.differenceSeconds > 0 ? "behind" : "ahead";
-            const progress = cubicProgress(parseTimeToSeconds(row.cutTime), parseTimeToSeconds(row.swimmerTime));
-            const awardIcon = rowClass === "ahead" ? '<img src="images/icons/award.svg" alt="Qualified" title="Qualified"/>&nbsp;' : "";
+            const rowClass = row.differenceSeconds === null ? "behind" : (row.differenceSeconds > 0 ? "behind" : "ahead");
+            const progress = cubicProgress(parseTimeToSeconds(row.cutTime), row.swimmerTime ? parseTimeToSeconds(row.swimmerTime) : null);
+            const awardIcon = (rowClass === "ahead" && row.swimmerTime) ? '<img src="images/icons/award.svg" alt="Qualified" title="Qualified"/>&nbsp;' : "";
+            const bestTimeDisplay = row.swimmerTime ? formatDisplayTime(row.swimmerTime) : "";
+            const bestTimeDifference = row.swimmerTime ? "(" + formatDifference(row.differenceSeconds) + ")" : "";
             return `
             <tr class="${rowClass}">
               <td>
@@ -454,8 +459,8 @@
                 <span class="small-text">${row.event}</span>
               </td>
               <td>
-                ${awardIcon}${formatDisplayTime(row.swimmerTime)}<br/>
-                <span class="small-text">(${formatDifference(row.differenceSeconds)})</span>
+                ${awardIcon}${bestTimeDisplay}<br/>
+                <span class="small-text">${bestTimeDifference}</span>
               </td>
               <td class="progress-cell">
                 <div class="progress" aria-label="Progress to cut: ${progress.toFixed(1)}%">
