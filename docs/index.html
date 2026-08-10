@@ -54,21 +54,6 @@
       tr.behind {
         background: #3f1720;
       }
-      .pill {
-        display: inline-block;
-        padding: 0.25rem 0.55rem;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        font-weight: 600;
-      }
-      .ahead .pill {
-        background: #34d399;
-        color: #052e16;
-      }
-      .behind .pill {
-        background: #f87171;
-        color: #450a0a;
-      }
       .progress-cell {
         width: auto;
         vertical-align: middle;
@@ -104,19 +89,6 @@
         padding: 0 0.35rem;
         color: #1f2937;
         font-size: 0.75rem;
-      }
-      .progress-label {
-        display: none;
-      }
-      .progress-detail {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 0.35rem;
-      }
-      .progress-detail .pill {
-        margin-left: auto;
       }
       .table-controls {
         display: flex;
@@ -246,15 +218,7 @@
         "1519": "15-19",
         "15O": "15 & Over",
       };
-      const ageGroupRank = {
-        "08U": 0,
-        "0910": 1,
-        "10U": 1,
-        "1112": 3,
-        "1314": 4,
-        "1519": 5,
-        "15O": 6,
-      };
+      
 
       function normalizeAgeGroup(value) {
         if (value === null || value === undefined || value === "") {
