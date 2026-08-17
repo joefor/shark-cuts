@@ -207,12 +207,57 @@
           <tbody id="gold-results-body"></tbody>
         </table>
       </section>
+
+      <section>
+        <h2><img src="images/section6.png" alt="Section 6" height="30"> Class A Cut Times</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Class A Cut</th>
+              <th>Abby's Best</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
+            </tr>
+          </thead>
+          <tbody id="section6-a-results-body"></tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2><img src="images/section6.png" alt="Section 6" height="30"> Sectional Cut Times</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Sectional Cut</th>
+              <th>Abby's Best</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
+            </tr>
+          </thead>
+          <tbody id="section6-sectional-results-body"></tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2><img src="images/section6.png" alt="Section 6" height="30"> State Cut Times</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>State Cut</th>
+              <th>Abby's Best</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
+            </tr>
+          </thead>
+          <tbody id="section6-state-results-body"></tbody>
+        </table>
+      </section>
     </main>
 
     <script src="data/fastest_times.js"></script>
     <script src="data/ymca_state_times.js"></script>
     <script src="data/usa_ni_silver_times.js"></script>
     <script src="data/usa_ni_gold_times.js"></script>
+    <script src="data/section6_class_a_times.js"></script>
+    <script src="data/section6_sectional_times.js"></script>
+    <script src="data/section6_state_times.js"></script>
     <script>
       const strokeNames = { 1: "Free", 2: "Back", 3: "Breast", 4: "Fly", 5: "IM" };
       const ageGroupLabels = {
@@ -467,6 +512,9 @@
       initializeTable("results-body", ymcaStateTimes);
       initializeTable("silver-results-body", usaNiSilverTimes);
       initializeTable("gold-results-body", usaNiGoldTimes);
+      initializeTable("section6-a-results-body", section6ClassATimes);
+      initializeTable("section6-sectional-results-body", section6SectionalTimes);
+      initializeTable("section6-state-results-body", section6StateTimes);
 
     </script>
   </body>
