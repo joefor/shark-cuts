@@ -209,6 +209,20 @@
       </section>
 
       <section>
+        <h2><img src="images/williamsville_north.png" alt="Willamsville North" height="32"> Varsity Letter Times</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Varsity Cut</th>
+              <th>Abby's Best</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
+            </tr>
+          </thead>
+          <tbody id="williamsville-north-body"></tbody>
+        </table>
+      </section>
+  
+      <section>
         <h2><img src="images/section6.png" alt="Section 6" height="30"> Class A Cut Times</h2>
         <table>
           <thead>
@@ -255,6 +269,7 @@
     <script src="data/ymca_state_times.js"></script>
     <script src="data/usa_ni_silver_times.js"></script>
     <script src="data/usa_ni_gold_times.js"></script>
+    <script src="data/williamsville_north_times.js"></script>
     <script src="data/section6_class_a_times.js"></script>
     <script src="data/section6_sectional_times.js"></script>
     <script src="data/section6_state_times.js"></script>
@@ -512,6 +527,7 @@
       initializeTable("results-body", ymcaStateTimes);
       initializeTable("silver-results-body", usaNiSilverTimes);
       initializeTable("gold-results-body", usaNiGoldTimes);
+      initializeTable("williamsville-north-body", williamsvilleNorthTimes);
       initializeTable("section6-a-results-body", section6ClassATimes);
       initializeTable("section6-sectional-results-body", section6SectionalTimes);
       initializeTable("section6-state-results-body", section6StateTimes);
