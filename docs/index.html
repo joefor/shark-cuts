@@ -25,6 +25,30 @@
       h2 img, th img {
         vertical-align: text-bottom;
       }
+      .collapsible-heading {
+        margin: 1.5rem 0 0.75rem;
+      }
+      .section-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .section-toggle:focus-visible {
+        outline: 2px solid #30D878;
+        outline-offset: 4px;
+      }
+      .section-toggle .chevron {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+      }
       p {
         margin-top: 0;
         color: #9ca3af;
@@ -167,8 +191,14 @@
             </select>
           </label>
         </div>
-        <h2><img src="images/ymca.png" alt="YMCA" height="24"> NY State Cut Times</h2>
-        <table>
+        
+        <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="ymca-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/ymca.png" alt="YMCA" height="24"> NY State Cut Times
+          </button>
+        </h2>
+        <table id="ymca-table">
           <thead>
             <tr>
               <th>YMCA Cut</th>
@@ -181,8 +211,13 @@
       </section>
 
       <section>
-        <h2><img src="images/ni_swimming.png" alt="Niagara Swimming" height="32"> Silver Cut Times</h2>
-        <table>
+        <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="silver-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/ni_swimming.png" alt="Niagara Swimming" height="32"> Silver Cut Times
+          </button>
+        </h2>
+        <table id="silver-table">
           <thead>
             <tr>
               <th>Silver Cut</th>
@@ -195,8 +230,13 @@
       </section>
 
       <section>
-        <h2><img src="images/ni_swimming.png" alt="Niagara Swimming" height="32"> Gold Cut Times</h2>
-        <table>
+        <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="gold-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/ni_swimming.png" alt="Niagara Swimming" height="32"> Gold Cut Times
+          </button>
+        </h2>
+        <table id="gold-table">
           <thead>
             <tr>
               <th>Gold Cut</th>
@@ -209,8 +249,13 @@
       </section>
 
       <section>
-        <h2><img src="images/williamsville_north.png" alt="Willamsville North" height="32"> Varsity Times</h2>
-        <table>
+        <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="williamsville-north-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/williamsville_north.png" alt="Willamsville North" height="32"> Varsity Times
+          </button>
+        </h2>
+        <table id="williamsville-north-table">
           <thead>
             <tr>
               <th>Varsity Cut</th>
@@ -223,8 +268,13 @@
       </section>
   
       <section>
-        <h2><img src="images/section6.png" alt="Section 6" height="30"> Class A Cut Times</h2>
-        <table>
+        <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section6-a-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/section6.png" alt="Section 6" height="30"> Class A Cut Times
+          </button>
+        </h2>
+        <table id="section6-a-table">
           <thead>
             <tr>
               <th>Class A Cut</th>
@@ -237,8 +287,13 @@
       </section>
 
       <section>
-        <h2><img src="images/section6.png" alt="Section 6" height="30"> Sectional Cut Times</h2>
-        <table>
+        <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section6-sectional-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/section6.png" alt="Section 6" height="30"> Sectional Cut Times
+          </button>
+        </h2>
+        <table id="section6-sectional-table">
           <thead>
             <tr>
               <th>Sectional Cut</th>
@@ -251,8 +306,13 @@
       </section>
 
       <section>
-        <h2><img src="images/nysphsaa.png" alt="NYS Public High School Athletic Association" height="30"> State Cut Times</h2>
-        <table>
+        <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section6-state-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/nysphsaa.png" alt="NYS Public High School Athletic Association" height="30"> State Cut Times
+          </button>
+        </h2>
+        <table id="section6-state-table">
           <thead>
             <tr>
               <th>State Cut</th>
@@ -524,6 +584,26 @@
         render();
       }
 
+      function initializeCollapsibleSections() {
+        document.querySelectorAll(".section-toggle").forEach((toggle) => {
+          const table = document.getElementById(toggle.getAttribute("aria-controls"));
+          const chevron = toggle.querySelector(".chevron");
+
+          if (!table || !chevron) {
+            return;
+          }
+
+          toggle.addEventListener("click", () => {
+            const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+            toggle.setAttribute("aria-expanded", String(!isExpanded));
+            table.hidden = isExpanded;
+            chevron.src = isExpanded
+              ? "images/icons/chevron-right.png"
+              : "images/icons/chevron-down.png";
+          });
+        });
+      }
+
       initializeTable("results-body", ymcaStateTimes);
       initializeTable("silver-results-body", usaNiSilverTimes);
       initializeTable("gold-results-body", usaNiGoldTimes);
@@ -531,6 +611,7 @@
       initializeTable("section6-a-results-body", section6ClassATimes);
       initializeTable("section6-sectional-results-body", section6SectionalTimes);
       initializeTable("section6-state-results-body", section6StateTimes);
+      initializeCollapsibleSections();
 
     </script>
   </body>
