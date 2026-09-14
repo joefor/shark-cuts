@@ -63,7 +63,7 @@
       }
       th,
       td {
-        padding: 0.8rem 0.9rem;
+        padding: 0.8rem 0.8rem;
         text-align: left;
         border-bottom: 1px solid #080E17;
         vertical-align: text-top;
@@ -133,7 +133,7 @@
         display: flex;
         align-items: center;
         gap: 0.4rem;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: #d1d5db;
       }
       .table-controls select {
@@ -142,7 +142,7 @@
         border: 1px solid #374151;
         background: #111827;
         color: #f3f4f6;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
       }
       .title-bar {
         background-color: #000000;  /* Makes the bar black */
@@ -250,6 +250,25 @@
 
       <section>
         <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="zones-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/usa_swimming.webp" alt="USA Swimming" height="32"> Eastern Zone Cut Times
+          </button>
+        </h2>
+        <table id="zones-table">
+          <thead>
+            <tr>
+              <th>Eastern Zone Cut</th>
+              <th>Abby's Best</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
+            </tr>
+          </thead>
+          <tbody id="zones-results-body"></tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 class="collapsible-heading">
           <button class="section-toggle" type="button" aria-expanded="true" aria-controls="williamsville-north-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/williamsville_north.png" alt="Willamsville North" height="32"> Varsity Times
@@ -329,6 +348,7 @@
     <script src="data/ymca_state_times.js"></script>
     <script src="data/usa_ni_silver_times.js"></script>
     <script src="data/usa_ni_gold_times.js"></script>
+    <script src="data/usa_eastern_zone_times.js"></script>
     <script src="data/williamsville_north_times.js"></script>
     <script src="data/section6_class_a_times.js"></script>
     <script src="data/section6_sectional_times.js"></script>
@@ -607,6 +627,7 @@
       initializeTable("results-body", ymcaStateTimes);
       initializeTable("silver-results-body", usaNiSilverTimes);
       initializeTable("gold-results-body", usaNiGoldTimes);
+      initializeTable("zones-results-body", usaEasternZoneTimes);
       initializeTable("williamsville-north-body", williamsvilleNorthTimes);
       initializeTable("section6-a-results-body", section6ClassATimes);
       initializeTable("section6-sectional-results-body", section6SectionalTimes);
