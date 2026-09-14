@@ -212,7 +212,7 @@
 
       <section>
         <h2 class="collapsible-heading">
-          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="silver-table">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="silver-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/ni_swimming.png" alt="Niagara Swimming" height="32"> Silver Cut Times
           </button>
@@ -231,7 +231,7 @@
 
       <section>
         <h2 class="collapsible-heading">
-          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="gold-table">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="gold-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/ni_swimming.png" alt="Niagara Swimming" height="32"> Gold Cut Times
           </button>
@@ -250,7 +250,7 @@
 
       <section>
         <h2 class="collapsible-heading">
-          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="zones-table">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="zones-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/usa_swimming.webp" alt="USA Swimming" height="32"> Eastern Zone Cut Times
           </button>
@@ -269,7 +269,7 @@
 
       <section>
         <h2 class="collapsible-heading">
-          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="williamsville-north-table">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="williamsville-north-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/williamsville_north.png" alt="Willamsville North" height="32"> Varsity Times
           </button>
@@ -288,7 +288,7 @@
   
       <section>
         <h2 class="collapsible-heading">
-          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section6-a-table">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="section6-a-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/section6.png" alt="Section 6" height="30"> Class A Cut Times
           </button>
@@ -307,7 +307,7 @@
 
       <section>
         <h2 class="collapsible-heading">
-          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section6-sectional-table">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="section6-sectional-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/section6.png" alt="Section 6" height="30"> Sectional Cut Times
           </button>
@@ -326,7 +326,7 @@
 
       <section>
         <h2 class="collapsible-heading">
-          <button class="section-toggle" type="button" aria-expanded="true" aria-controls="section6-state-table">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="section6-state-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/nysphsaa.png" alt="NYS Public High School Athletic Association" height="30"> State Cut Times
           </button>
@@ -605,7 +605,9 @@
       }
 
       function initializeCollapsibleSections() {
-        document.querySelectorAll(".section-toggle").forEach((toggle) => {
+        const toggles = document.querySelectorAll(".section-toggle");
+
+        toggles.forEach((toggle) => {
           const table = document.getElementById(toggle.getAttribute("aria-controls"));
           const chevron = toggle.querySelector(".chevron");
 
@@ -613,13 +615,31 @@
             return;
           }
 
+          const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+          table.hidden = !isExpanded;
+          chevron.src = isExpanded
+            ? "images/icons/chevron-down.png"
+            : "images/icons/chevron-right.png";
+
           toggle.addEventListener("click", () => {
-            const isExpanded = toggle.getAttribute("aria-expanded") === "true";
-            toggle.setAttribute("aria-expanded", String(!isExpanded));
-            table.hidden = isExpanded;
-            chevron.src = isExpanded
-              ? "images/icons/chevron-right.png"
-              : "images/icons/chevron-down.png";
+            const shouldExpand = toggle.getAttribute("aria-expanded") !== "true";
+
+            toggles.forEach((otherToggle) => {
+              const otherTable = document.getElementById(otherToggle.getAttribute("aria-controls"));
+              const otherChevron = otherToggle.querySelector(".chevron");
+              const isCurrentToggle = otherToggle === toggle;
+              const isExpanded = isCurrentToggle && shouldExpand;
+
+              otherToggle.setAttribute("aria-expanded", String(isExpanded));
+              if (otherTable) {
+                otherTable.hidden = !isExpanded;
+              }
+              if (otherChevron) {
+                otherChevron.src = isExpanded
+                  ? "images/icons/chevron-down.png"
+                  : "images/icons/chevron-right.png";
+              }
+            });
           });
         });
       }
