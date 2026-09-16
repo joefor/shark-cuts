@@ -156,6 +156,12 @@
         font-size: 0.85rem;
         color: #A0ACB4;
       }
+      footer {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.25rem 1.5rem;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -344,6 +350,10 @@
       </section>
     </main>
 
+    <footer class="small-text">
+      Abby's Best times last updated: <time id="fastest-times-updated">—</time>
+    </footer>
+
     <script src="data/fastest_times.js"></script>
     <script src="data/ymca_state_times.js"></script>
     <script src="data/usa_ni_silver_times.js"></script>
@@ -456,6 +466,32 @@
         } else {
           return `+${rounded}s`;
         }
+      }
+
+      function renderFastestTimesUpdated() {
+        const updatedElement = document.getElementById("fastest-times-updated");
+        if (!updatedElement) {
+          return;
+        }
+
+        const mostRecent = fastestTimes.reduce((latest, item) => {
+          if (!item || !item.date_updated) {
+            return latest;
+          }
+
+          const timestamp = Date.parse(item.date_updated);
+          if (Number.isNaN(timestamp) || (!latest || timestamp > latest.timestamp)) {
+            return { timestamp, value: item.date_updated };
+          }
+          return latest;
+        }, null);
+
+        if (!mostRecent) {
+          return;
+        }
+
+        updatedElement.dateTime = mostRecent.value;
+        updatedElement.textContent = new Date(mostRecent.timestamp).toLocaleDateString();
       }
 
       function getEventLabel(distance, stroke) {
@@ -653,6 +689,7 @@
       initializeTable("section6-sectional-results-body", section6SectionalTimes);
       initializeTable("section6-state-results-body", section6StateTimes);
       initializeCollapsibleSections();
+      renderFastestTimesUpdated();
 
     </script>
   </body>
