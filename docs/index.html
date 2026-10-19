@@ -256,6 +256,25 @@
 
       <section>
         <h2 class="collapsible-heading">
+          <button class="section-toggle" type="button" aria-expanded="false" aria-controls="motivational-table">
+            <img class="chevron" src="images/icons/chevron-down.png" alt="">
+            <img src="images/usa_swimming.webp" alt="USA Swimming" height="32"> Motivational Times
+          </button>
+        </h2>
+        <table id="motivational-table">
+          <thead>
+            <tr>
+              <th>Next Target</th>
+              <th>Abby's Best</th>
+              <th>Progress&nbsp;<img src="images/icons/info.svg" alt="Progress Info" title="Percentage to cut time based on cubic curve (P = 100 * (C / T)³)"/></th>
+            </tr>
+          </thead>
+          <tbody id="motivational-results-body"></tbody>
+        </table>
+      </section>
+
+      <!--section>
+        <h2 class="collapsible-heading">
           <button class="section-toggle" type="button" aria-expanded="false" aria-controls="zones-table">
             <img class="chevron" src="images/icons/chevron-down.png" alt="">
             <img src="images/usa_swimming.webp" alt="USA Swimming" height="32"> Eastern Zone Cut Times
@@ -271,7 +290,7 @@
           </thead>
           <tbody id="zones-results-body"></tbody>
         </table>
-      </section>
+      </section-->
 
       <section>
         <h2 class="collapsible-heading">
@@ -358,6 +377,7 @@
     <script src="data/ymca_state_times.js"></script>
     <script src="data/usa_ni_silver_times.js"></script>
     <script src="data/usa_ni_gold_times.js"></script>
+    <script src="data/usa_motivational_times.js"></script>
     <script src="data/usa_eastern_zone_times.js"></script>
     <script src="data/williamsville_north_times.js"></script>
     <script src="data/section6_class_a_times.js"></script>
@@ -640,6 +660,146 @@
         render();
       }
 
+      function getLatestSwimmerAge(items) {
+        const latest = items.reduce((mostRecent, item) => {
+          if (!item || !item.dateofswim || item.swimmerage === null || item.swimmerage === undefined) {
+            return mostRecent;
+          }
+
+          const timestamp = Date.parse(item.dateofswim);
+          if (Number.isNaN(timestamp) || (mostRecent && timestamp <= mostRecent.timestamp)) {
+            return mostRecent;
+          }
+          return { timestamp, age: Number(item.swimmerage) };
+        }, null);
+
+        return latest && Number.isInteger(latest.age) ? latest.age : null;
+      }
+
+      function buildMotivationalRows(cutTimes, bestTimesMap, gender, course, age) {
+        const tiers = ["b", "bb", "a", "aa", "aaa", "aaaa"];
+        const rows = cutTimes
+          .filter((cut) =>
+            cut.eventgender === gender &&
+            cut.eventcourse === course &&
+            Number(cut.eventage) === age
+          )
+          .map((cut) => {
+            const key = `${cut.eventdistance}|${cut.eventstroke}`;
+            const swimmer = bestTimesMap.get(key);
+            const swimmerSeconds = swimmer ? parseTimeToSeconds(swimmer.eventtime) : null;
+            const cutTiers = tiers
+              .map((tier) => ({ level: tier.toUpperCase(), time: cut[tier] }))
+              .filter((tier) => parseTimeToSeconds(tier.time) !== null);
+            const achievedCuts = swimmerSeconds === null
+              ? []
+              : cutTiers.filter((tier) => swimmerSeconds <= parseTimeToSeconds(tier.time));
+            const highestAchieved = achievedCuts.length > 0
+              ? achievedCuts[achievedCuts.length - 1]
+              : null;
+            const nextCut = swimmerSeconds === null
+              ? cutTiers[0] || null
+              : cutTiers.find((tier) => swimmerSeconds > parseTimeToSeconds(tier.time)) || null;
+
+            return {
+              event: getEventLabel(cut.eventdistance, cut.eventstroke),
+              age,
+              swimmerTime: swimmer ? swimmer.eventtime : null,
+              nextCut,
+              highestAchieved,
+              differenceSeconds: nextCut && swimmerSeconds !== null
+                ? swimmerSeconds - parseTimeToSeconds(nextCut.time)
+                : null,
+              strokeCode: Number(cut.eventstroke),
+              distance: Number(cut.eventdistance),
+            };
+          })
+          .sort((a, b) => {
+            if (a.strokeCode !== b.strokeCode) {
+              return a.strokeCode - b.strokeCode;
+            }
+            return a.distance - b.distance;
+          });
+
+        return rows;
+      }
+
+      function renderMotivationalTable(gender, course) {
+        const body = document.getElementById("motivational-results-body");
+        if (!body) {
+          return;
+        }
+
+        const age = getLatestSwimmerAge(fastestTimes);
+        if (age === null) {
+          body.innerHTML = "";
+          return;
+        }
+
+        const bestTimesForCourse = buildBestTimesMap(fastestTimes, course);
+        const rows = buildMotivationalRows(usaMotivationalTimes, bestTimesForCourse, gender, course, age);
+        body.innerHTML = rows
+          .map((row) => {
+            const rowClass = !row.nextCut
+              ? "ahead"
+              : (row.differenceSeconds === null || row.differenceSeconds > 0 ? "behind" : "ahead");
+            const progress = row.nextCut
+              ? cubicProgress(
+                parseTimeToSeconds(row.nextCut.time),
+                row.swimmerTime ? parseTimeToSeconds(row.swimmerTime) : null
+              )
+              : 100;
+            const awardIcon = (rowClass === "ahead" && row.swimmerTime)
+              ? '<img src="images/icons/trophy.svg" alt="Qualified" title="Qualified"/>&nbsp;'
+              : "";
+            const bestTimeDisplay = row.swimmerTime
+              ? `${row.highestAchieved ? `${row.highestAchieved.level}` : "C"}&nbsp;${formatDisplayTime(row.swimmerTime)}`
+              : "";
+            const bestTimeDifference = row.swimmerTime && row.nextCut
+              ? `(${formatDifference(row.differenceSeconds)})`
+              : "";
+            const cutDisplay = row.nextCut
+              ? `${row.nextCut.level}&nbsp;${formatDisplayTime(row.nextCut.time)}`
+              
+              : "All cuts achieved";
+
+            return `
+            <tr class="${rowClass}">
+              <td>
+                ${cutDisplay}<br/>
+                <span class="small-text">${row.event}</span>
+              </td>
+              <td class="besttime-${rowClass}">
+                ${awardIcon}${bestTimeDisplay}<br/>
+                <span class="small-text">${bestTimeDifference}</span>
+              </td>
+              <td class="progress-cell">
+                <div class="progress" aria-label="Progress to cut: ${progress.toFixed(1)}%">
+                  <div class="progress-fill" style="width: ${progress.toFixed(1)}%;">
+                    <span class="progress-text">${progress.toFixed(1)}%</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+          })
+          .join("");
+      }
+
+      function initializeMotivationalTable() {
+        const genderSelect = document.getElementById("global-gender-select");
+        const courseSelect = document.getElementById("global-course-select");
+
+        if (!genderSelect || !courseSelect) {
+          return;
+        }
+
+        const render = () => renderMotivationalTable(genderSelect.value, courseSelect.value);
+        genderSelect.addEventListener("change", render);
+        courseSelect.addEventListener("change", render);
+        render();
+      }
+
       function initializeCollapsibleSections() {
         const toggles = document.querySelectorAll(".section-toggle");
 
@@ -683,7 +843,8 @@
       initializeTable("results-body", ymcaStateTimes);
       initializeTable("silver-results-body", usaNiSilverTimes);
       initializeTable("gold-results-body", usaNiGoldTimes);
-      initializeTable("zones-results-body", usaEasternZoneTimes);
+      initializeMotivationalTable();
+      // initializeTable("zones-results-body", usaEasternZoneTimes);
       initializeTable("williamsville-north-body", williamsvilleNorthTimes);
       initializeTable("section6-a-results-body", section6ClassATimes);
       initializeTable("section6-sectional-results-body", section6SectionalTimes);
