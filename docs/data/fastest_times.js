@@ -338,7 +338,7 @@ const fastestTimes = [
     dateofswim: "2026-08-11",
     seedtime: null,
     seedcourse: "",
-    eventtime: "925.87",
+    eventtime: "857.45",
     eventround: "TIM",
     eventrun: 1,
     reactiontime: null,
